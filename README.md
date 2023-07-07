@@ -79,6 +79,20 @@ data:
       - url_pattern: /filename1.txt
         host: nginx.nginx.svc.cluster.local
         encoding: json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: krakend-service
+  namespace: krakend
+spec:
+  selector:
+    app: krakend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
 ````
 
 Run the following command to create the deployment:
@@ -129,8 +143,12 @@ kubectl run temp-pod --restart=Never --image=nginx --namespace=nginx --dry-run=c
 This command creates a temporary pod instance using the NGINX image and writes the content "Hello, World!" to the filename1.txt file in the /usr/share/nginx/html/ directory.
 
 Test the Use Case:
-To test the use case, run the following command:
+To test the use case, use the following command:
 ````shell
-wget http://krakend.krakend:8080/service1/filename1.txt
+kubectl port-forward service/krakend-service 8080:8080 -n krakend
+````
+
+````shell
+wget http://localhost:8080/service1/filename1.txt
 ````
 This command sends the request through the KrakenD API Gateway (krakend.krakend:8080) and performs the request mapping from /service1 to the /filename1.txt path in the NGINX service. The filename1.txt file is downloaded.

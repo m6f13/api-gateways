@@ -18,9 +18,6 @@ spec:
           image: devopsfaith/krakend:latest
           ports:
             - containerPort: 8080  # Port for accessing the KrakenD API Gateway
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/krakend
       volumes:
         - name: config-volume
           configMap:
@@ -45,3 +42,17 @@ data:
       - url_pattern: /filename1.txt
         host: nginx.nginx.svc.cluster.local
         encoding: json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: krakend-service
+  namespace: krakend
+spec:
+  selector:
+    app: krakend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
