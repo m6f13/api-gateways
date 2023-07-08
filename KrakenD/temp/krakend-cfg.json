@@ -45,7 +45,7 @@
           "method": "GET",
           "extra_config": {},
           "host": [
-            "nginx.nginx.svc.cluster.local"
+            "nginx-service.nginx.svc.cluster.local"
           ],
           "disable_host_sanitize": true
         }
