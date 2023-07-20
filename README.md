@@ -31,3 +31,66 @@ It is important to note that the choice between KrakenD and Kong depends on the 
 helm repo add equinixmetal https://helm.equinixmetal.com
 ```
 
+# KrakenD
+## Links
+* https://www.krakend.io/docs/overview/guides/
+
+## configuration
+### krakend.json
+```json
+{
+    "version": 3,
+    "name": "My API GW",
+    "port": 8080,
+    "cache_ttl": "3600s",
+    "timeout": "3s",
+    "extra_config": {
+      "telemetry/logging": {
+        "level":  "DEBUG",
+        "prefix": "[KRAKEND]",
+        "syslog": false,
+        "stdout": true
+      },
+      "telemetry/metrics": {
+        "collection_time": "60s",
+        "proxy_disabled": false,
+        "router_disabled": false,
+        "backend_disabled": false,
+        "endpoint_disabled": false,
+        "listen_address": ":8090"
+      },
+      "security/cors": {
+        "allow_origins": [ "http://192.168.99.100:3000", "http://localhost:3000" ],
+        "allow_methods": [ "POST", "GET" ],
+        "allow_headers": [ "Origin", "Authorization", "Content-Type" ],
+        "expose_headers": [ "Content-Length" ],
+        "max_age": "12h"
+      }
+    },
+    "endpoints": [
+        {
+            "endpoint": "/service1",
+            "method": "GET",
+            "output_encoding": "no-op",
+            "extra_config": {},
+            "backend": [
+                {
+                    "url_pattern": "/index.html",
+                    "encoding": "no-op",
+                    "sd": "static",
+                    "method": "GET",
+                    "extra_config": {},
+                    "host": [
+                        "http://nginx-service.nginx.svc.cluster.local"
+                    ],
+                    "disable_host_sanitize": true
+                }
+            ]
+        }
+    ]
+}
+```
+### create the configmap for krakend
+```shell
+kubectl create configmap krakend-cfg --from-file=./krakend-cfg.json -n krakend
+```

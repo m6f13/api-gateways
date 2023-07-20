@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: krakend-cm
+  namespace: krakend
+  labels:
+    name: krakend-cm
+data:
+  krakend.json: |
+    {
+      "version": 3,
+      "name": "My API GW",
+      "port": 8080,
+      "cache_ttl": "3600s",
+      "timeout": "3s",
+      "extra_config": {}
+    }
