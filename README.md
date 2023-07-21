@@ -39,58 +39,82 @@ helm repo add equinixmetal https://helm.equinixmetal.com
 ### krakend.json
 ```json
 {
-    "version": 3,
-    "name": "My API GW",
-    "port": 8080,
-    "cache_ttl": "3600s",
-    "timeout": "3s",
-    "extra_config": {
-      "telemetry/logging": {
-        "level":  "DEBUG",
-        "prefix": "[KRAKEND]",
-        "syslog": false,
-        "stdout": true
-      },
-      "telemetry/metrics": {
-        "collection_time": "60s",
-        "proxy_disabled": false,
-        "router_disabled": false,
-        "backend_disabled": false,
-        "endpoint_disabled": false,
-        "listen_address": ":8090"
-      },
-      "security/cors": {
-        "allow_origins": [ "http://192.168.99.100:3000", "http://localhost:3000" ],
-        "allow_methods": [ "POST", "GET" ],
-        "allow_headers": [ "Origin", "Authorization", "Content-Type" ],
-        "expose_headers": [ "Content-Length" ],
-        "max_age": "12h"
-      }
+  "version": 3,
+  "name": "My API GW",
+  "port": 8080,
+  "cache_ttl": "3600s",
+  "timeout": "3s",
+  "extra_config": {
+    "telemetry/logging": {
+      "level":  "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true
     },
-    "endpoints": [
+    "telemetry/metrics": {
+      "collection_time": "60s",
+      "proxy_disabled": false,
+      "router_disabled": false,
+      "backend_disabled": false,
+      "endpoint_disabled": false,
+      "listen_address": ":8090"
+    },
+    "security/cors": {}
+  },
+  "endpoints": [
+    {
+      "endpoint": "/product1",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
         {
-            "endpoint": "/service1",
-            "method": "GET",
-            "output_encoding": "no-op",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/index.html",
-                    "encoding": "no-op",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {},
-                    "host": [
-                        "http://nginx-service.nginx.svc.cluster.local"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
+          "url_pattern": "/product1",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {},
+          "host": [
+            "http://nginx-service.nginx.svc.cluster.local"
+          ],
+          "disable_host_sanitize": true
         }
-    ]
+      ]
+    },
+    {
+      "endpoint": "/product2",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/product2",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {},
+          "host": [
+            "http://nginx-service.nginx.svc.cluster.local"
+          ],
+          "disable_host_sanitize": true
+        }
+      ]
+    }
+  ]
 }
 ```
 ### create the configmap for krakend
 ```shell
 kubectl create configmap krakend-cfg --from-file=./krakend-cfg.json -n krakend
+```
+
+### create the configmap for nginx
+```shell
+kubectl create configmap product1-html --from-file=product1-index.html -n nginx
+kubectl create configmap product2-html --from-file=product2-index.html -n nginx
+```
+
+### deploy ingress controller
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
 ```
