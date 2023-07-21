@@ -69,13 +69,13 @@ helm repo add equinixmetal https://helm.equinixmetal.com
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/product1",
+          "url_pattern": "/product1-index.html",
           "encoding": "no-op",
           "sd": "static",
           "method": "GET",
           "extra_config": {},
           "host": [
-            "http://nginx-service.nginx.svc.cluster.local"
+            "http://product1.nginx.svc.cluster.local"
           ],
           "disable_host_sanitize": true
         }
@@ -88,13 +88,13 @@ helm repo add equinixmetal https://helm.equinixmetal.com
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/product2",
+          "url_pattern": "/product2-index.html",
           "encoding": "no-op",
           "sd": "static",
           "method": "GET",
           "extra_config": {},
           "host": [
-            "http://nginx-service.nginx.svc.cluster.local"
+            "http://product2.nginx.svc.cluster.local"
           ],
           "disable_host_sanitize": true
         }
