@@ -107,14 +107,49 @@ helm repo add equinixmetal https://helm.equinixmetal.com
 ```shell
 kubectl create configmap krakend-cfg --from-file=./krakend-cfg.json -n krakend
 ```
-
-### create the configmap for nginx
+# LDAP
+## deploying the files
+creating namespace
 ```shell
-kubectl create configmap product1-html --from-file=product1-index.html -n nginx
-kubectl create configmap product2-html --from-file=product2-index.html -n nginx
+kubectl create ns ldap
+```
+applying the files
+```shell
+kubectl apply -f openldap-pvc.yaml
+kubectl apply -f openldap-deployment.yaml
+kubectl apply -f openldap-service.yaml
+```
+creating user
+```shell
+kubectl -n ldap exec -it [POD_NAME] -- /bin/bash
+```
+creating the ou-user.ldif
+```shell
+echo -e "dn: ou=users,dc=proconion,dc=com\nobjectClass: organizationalUnit\nou: users" > ou-user.ldif
+```
+adding the ou-user.ldif
+```shell
+dapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f ou-user.ldif
 ```
 
-### deploy ingress controller
+Inside the container, create a file named user.ldif
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
+echo -e "dn: uid=username,ou=users,dc=proconion,dc=com\nobjectClass: top\nobjectClass: account\nobjectClass: simpleSecurityObject\nuserPassword: {CLEARTEXT}password\nuid: username" > user.ldif
+```
+```shell
+dn: uid=username,ou=users,dc=proconion,dc=com
+objectClass: top
+objectClass: account
+objectClass: simpleSecurityObject
+userPassword: {CLEARTEXT}password
+uid: username
+```
+add the user:
+```shell
+ldapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f user.ldif
+```
+
+verify if user is created
+```shell
+kubectl -n ldap exec [POD_NAME] -- ldapsearch -x -LLL -H ldap://localhost:389 -D "cn=admin,dc=proconion,dc=com" -w adminpassword -b "ou=users,dc=proconion,dc=com" "(uid=username)"
 ```
