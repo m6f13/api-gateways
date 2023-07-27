@@ -107,6 +107,25 @@ helm repo add equinixmetal https://helm.equinixmetal.com
 ```shell
 kubectl create configmap krakend-cfg --from-file=./krakend-cfg.json -n krakend
 ```
+---
+## KrakenD playground
+- youtube: https://www.youtube.com/watch?v=VtXXZRO84t8
+- link: https://github.com/krakendio/playground-community
+- clone repo
+```shell
+git clone https://github.com/krakendio/playground-community.git
+```
+```shell
+docker-compose up
+```
+using devopsfaith/krakend:watch
+- watch tag is for development only and will restart Krakend every time when there is a configuration change.
+
+
+
+
+
+---
 # LDAP
 ## deploying the files
 creating namespace
@@ -148,8 +167,18 @@ add the user:
 ```shell
 ldapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f user.ldif
 ```
-
 verify if user is created
 ```shell
 kubectl -n ldap exec [POD_NAME] -- ldapsearch -x -LLL -H ldap://localhost:389 -D "cn=admin,dc=proconion,dc=com" -w adminpassword -b "ou=users,dc=proconion,dc=com" "(uid=username)"
+```
+---
+# Kong
+## installation with Manifest
+```shell
+kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-controller/v2.10.0/deploy/single/all-in-one-dbless.yaml
+```
+## installation with helm
+- https://docs.konghq.com/gateway/3.3.x/install/kubernetes/helm-quickstart/
+```shell
+helm upgrade --install kong-poc ./kong -f ./kong/values.yaml -n kong
 ```

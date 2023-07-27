@@ -11,63 +11,55 @@ data:
       "version": 3,
       "name": "My API GW",
       "port": 8080,
-      "cache_ttl": "3600s",
-      "timeout": "3s",
-      "extra_config": {
-        "telemetry/logging": {
-          "level":  "DEBUG",
-          "prefix": "[KRAKEND]",
-          "syslog": false,
-          "stdout": true
-        },
-        "telemetry/metrics": {
-          "collection_time": "60s",
-          "proxy_disabled": false,
-          "router_disabled": false,
-          "backend_disabled": false,
-          "endpoint_disabled": false,
-          "listen_address": ":8090"
-        },
-        "security/cors": {}
-      },
       "endpoints": [
         {
-          "endpoint": "/product1",
+          "endpoint": "/test",
           "method": "GET",
-          "output_encoding": "no-op",
-          "extra_config": {},
+          "output_encoding": "json",
           "backend": [
             {
-              "url_pattern": "/product1-index.html",
-              "encoding": "no-op",
-              "sd": "static",
-              "method": "GET",
-              "extra_config": {},
               "host": [
-                "http://product1.nginx.svc.cluster.local"
+                "http://127.0.0.1:8080"
               ],
-              "disable_host_sanitize": true
-            }
-          ]
-        },
-        {
-          "endpoint": "/product2",
-          "method": "GET",
-          "output_encoding": "no-op",
-          "extra_config": {},
-          "backend": [
-            {
-              "url_pattern": "/product2-index.html",
+              "url_pattern": "/static-response",
+              "disable_host_sanitize": true,
               "encoding": "no-op",
-              "sd": "static",
-              "method": "GET",
-              "extra_config": {},
-              "host": [
-                "http://product2.nginx.svc.cluster.local"
-              ],
-              "disable_host_sanitize": true
+              "extra_config": {
+                "github.com/devopsfaith/krakend/proxy": {
+                  "static": {
+                    "data": {
+                      "message": "Authentication Successful!"
+                    }
+                  }
+                }
+              }
             }
           ]
         }
-      ]
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-martian": {
+          "fifo.Group": {
+            "scope": ["request"],
+            "aggregateErrors": false,
+            "modifiers": [
+              {
+                "mod.Auth": {
+                  "type": "Basic",
+                  "strategy": "ldap",
+                  "options": {
+                    "ldap": {
+                      "host": "openldap-service.ldap.svc.cluster.local:389",
+                      "baseDN": "dc=proconion,dc=com",
+                      "useSSL": false,
+                      "startTLS": false
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     }
+
