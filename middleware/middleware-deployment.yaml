@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-middleware
+  namespace: middleware
+spec:
+  replicas: 3  # Making it highly available
+  selector:
+    matchLabels:
+      app: ldap-middleware
+  template:
+    metadata:
+      labels:
+        app: ldap-middleware
+    spec:
+      containers:
+        - name: ldap-middleware
+          image: m6f13/ldap-middleware:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: ldap-middleware-config
