@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: krakend
-          image: m6f13/krakend:2.4.2
+          #image: m6f13/krakend:2.4.2
+          image: devopsfaith/krakend:watch
           ports:
             - containerPort: 8080
           imagePullPolicy: Always

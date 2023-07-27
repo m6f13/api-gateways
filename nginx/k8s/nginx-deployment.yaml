@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-service-product1
+  namespace: nginx
+  labels:
+    app: nginx-service-product1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-service-product1
+  template:
+    metadata:
+      labels:
+        app: nginx-service-product1
+    spec:
+      containers:
+        - name: nginx
+          image: m6f13/nginx-service-product1:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config

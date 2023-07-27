@@ -13,53 +13,31 @@ data:
       "port": 8080,
       "endpoints": [
         {
-          "endpoint": "/test",
+          "endpoint": "/nginx-service-product1/product.txt",
           "method": "GET",
           "output_encoding": "json",
+          "headers_to_pass": ["Authorization"],
           "backend": [
             {
-              "host": [
-                "http://127.0.0.1:8080"
-              ],
-              "url_pattern": "/static-response",
-              "disable_host_sanitize": true,
-              "encoding": "no-op",
+              "host": ["http://ldap-middleware.middleware.svc.cluster.local:5000"],
+              "url_pattern": "/authenticate",
+              "encoding": "json",
+              "sd": "static",
+              "extra_config": {}
+            },
+            {
+              "host": ["http://nginx-service-product1.nginx.svc.cluster.local"],
+              "url_pattern": "/nginx-service-product1/product.txt",
               "extra_config": {
-                "github.com/devopsfaith/krakend/proxy": {
-                  "static": {
-                    "data": {
-                      "message": "Authentication Successful!"
-                    }
-                  }
+                "github.com/devopsfaith/krakend-jose/validator": {
+                  "alg": "",
+                  "jwk-url": "http://middleware-service.middleware.svc.cluster.local:5000/auth",
+                  "disable_jwk_security": true
                 }
               }
             }
           ]
         }
-      ],
-      "extra_config": {
-        "github.com/devopsfaith/krakend-martian": {
-          "fifo.Group": {
-            "scope": ["request"],
-            "aggregateErrors": false,
-            "modifiers": [
-              {
-                "mod.Auth": {
-                  "type": "Basic",
-                  "strategy": "ldap",
-                  "options": {
-                    "ldap": {
-                      "host": "openldap-service.ldap.svc.cluster.local:389",
-                      "baseDN": "dc=proconion,dc=com",
-                      "useSSL": false,
-                      "startTLS": false
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      }
+      ]
     }
 

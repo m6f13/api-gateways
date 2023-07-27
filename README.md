@@ -135,7 +135,7 @@ kubectl create ns ldap
 applying the files
 ```shell
 kubectl apply -f openldap-pvc.yaml
-kubectl apply -f openldap-deployment.yaml
+kubectl apply -f openldap-nginx-deployment.yaml
 kubectl apply -f openldap-service.yaml
 ```
 creating user
@@ -148,19 +148,19 @@ echo -e "dn: ou=users,dc=proconion,dc=com\nobjectClass: organizationalUnit\nou: 
 ```
 adding the ou-user.ldif
 ```shell
-dapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f ou-user.ldif
+ldapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f ou-user.ldif
 ```
 
 Inside the container, create a file named user.ldif
 ```shell
-echo -e "dn: uid=username,ou=users,dc=proconion,dc=com\nobjectClass: top\nobjectClass: account\nobjectClass: simpleSecurityObject\nuserPassword: {CLEARTEXT}password\nuid: username" > user.ldif
+echo -e "dn: uid=username,ou=users,dc=proconion,dc=com\nobjectClass: top\nobjectClass: account\nobjectClass: simpleSecurityObject\nuserPassword: mypassword\nuid: username" > user.ldif
 ```
 ```shell
 dn: uid=username,ou=users,dc=proconion,dc=com
 objectClass: top
 objectClass: account
 objectClass: simpleSecurityObject
-userPassword: {CLEARTEXT}password
+userPassword: mypassword
 uid: username
 ```
 add the user:
