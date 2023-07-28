@@ -120,7 +120,10 @@ docker-compose up
 ```
 using devopsfaith/krakend:watch
 - watch tag is for development only and will restart Krakend every time when there is a configuration change.
-
+---
+# Kong
+- link: https://github.com/Kong/kubernetes-ingress-controller
+- 
 
 
 

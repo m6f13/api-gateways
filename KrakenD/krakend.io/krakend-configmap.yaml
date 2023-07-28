@@ -16,16 +16,26 @@ data:
           "endpoint": "/nginx-service-product1/product.txt",
           "method": "GET",
           "output_encoding": "json",
-          "headers_to_pass": "*",
+          "headers_to_pass": ["Authorization"],
           "backend": [
             {
-              "host": [ "http://ldap-middleware.middleware.svc.cluster.local:5000" ],
+              "host": ["http://ldap-middleware.middleware.svc.cluster.local:5000"],
               "url_pattern": "/authenticate",
-              "method": "POST"
+              "method": "POST",
+              "encoding": "json",
+              "sd": "static",
+              "extra_config": {},
+              "input": {
+                "headers": {
+                  "Content-Type": ["application/json"],
+                  "Authorization": ["{request.header.Authorization}"]
+                }
+              }
             },
             {
-              "host": [ "http://nginx-service-product1.nginx.svc.cluster.local" ],
-              "url_pattern": "/nginx-service-product1/product.txt"
+              "host": ["http://nginx-service-product1.nginx.svc.cluster.local"],
+              "url_pattern": "/nginx-service-product1/product.txt",
+              "extra_config": {}
             }
           ],
           "extra_config": {
@@ -33,6 +43,22 @@ data:
               "sequential": true
             }
           }
+        },
+        {
+          "endpoint": "/keycloak-protected",
+          "extra_config": {
+            "auth/validator": {
+              "alg": "RS256",
+              "jwk_url": "http://keycloak.keycloak.svc.cluster.local:8080/auth/realms/master/protocol/openid-connect/certs",
+              "disable_jwk_security": true
+            }
+          },
+          "backend": [
+            {
+              "host":["http://localhost:8080"],
+              "url_pattern": "/__health"
+            }
+          ]
         }
       ]
     }

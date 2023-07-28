@@ -2,7 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: kong
+  namespace: keycloak
+  labels:
+    app: postgres
 spec:
   replicas: 1
   selector:
@@ -15,13 +17,13 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgres:12
           env:
-            - name: POSTGRES_DB
-              value: kong
             - name: POSTGRES_USER
-              value: kong
+              value: keycloak
             - name: POSTGRES_PASSWORD
-              value: kongpassword
+              value: keycloak_pass
+            - name: POSTGRES_DB
+              value: keycloak
           ports:
             - containerPort: 5432
