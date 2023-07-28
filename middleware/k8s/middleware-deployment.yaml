@@ -4,7 +4,7 @@ metadata:
   name: ldap-middleware
   namespace: middleware
 spec:
-  replicas: 3  # Making it highly available
+  replicas: 1  # 3 Making it highly available
   selector:
     matchLabels:
       app: ldap-middleware

@@ -16,28 +16,23 @@ data:
           "endpoint": "/nginx-service-product1/product.txt",
           "method": "GET",
           "output_encoding": "json",
-          "headers_to_pass": ["Authorization"],
+          "headers_to_pass": "*",
           "backend": [
             {
-              "host": ["http://ldap-middleware.middleware.svc.cluster.local:5000"],
+              "host": [ "http://ldap-middleware.middleware.svc.cluster.local:5000" ],
               "url_pattern": "/authenticate",
-              "encoding": "json",
-              "sd": "static",
-              "extra_config": {}
+              "method": "POST"
             },
             {
-              "host": ["http://nginx-service-product1.nginx.svc.cluster.local"],
-              "url_pattern": "/nginx-service-product1/product.txt",
-              "extra_config": {
-                "github.com/devopsfaith/krakend-jose/validator": {
-                  "alg": "",
-                  "jwk-url": "http://middleware-service.middleware.svc.cluster.local:5000/auth",
-                  "disable_jwk_security": true
-                }
-              }
+              "host": [ "http://nginx-service-product1.nginx.svc.cluster.local" ],
+              "url_pattern": "/nginx-service-product1/product.txt"
             }
-          ]
+          ],
+          "extra_config": {
+            "proxy": {
+              "sequential": true
+            }
+          }
         }
       ]
     }
-
