@@ -25,6 +25,8 @@ spec:
               value: "adminpassword"
             - name: LDAP_BASE_DN
               value: "dc=proconion,dc=com"
+            - name: LDAP_LOG_LEVEL
+              value: "-1" # Full debugging
           ports:
             - containerPort: 389
           volumeMounts:

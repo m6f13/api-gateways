@@ -1,0 +1,77 @@
+# plugin: ldap-auth <-- not really required, as it is on route level
+{
+  "_meta": {
+    "disable": false
+  },
+  "base_dn": "ou=users,dc=proconion,dc=com",
+  "disable": false,
+  "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
+  "uid": "cn"
+}
+
+# consumer: ldap-auth
+{
+  "username": "jdoe",
+  "desc": "nginx",
+  "plugins": {
+    "ldap-auth": {
+      "_meta": {
+        "disable": false
+      },
+      "user_dn": "cn=jdoe,ou=users,dc=proconion,dc=com"
+    }
+  }
+}
+
+# route
+{
+  "uri": "/nginx-service-product1/*",
+  "name": "nginx-service-product1",
+  "desc": "nginx test",
+  "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS",
+    "CONNECT",
+    "TRACE",
+    "PURGE"
+  ],
+  "plugins": {
+    "ldap-auth": {
+      "_meta": {
+        "disable": false
+      },
+      "base_dn": "ou=users,dc=proconion,dc=com",
+      "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
+      "uid": "cn",
+      "user_dn": "cn=%s,ou=users,dc=proconion,dc=com"
+    }
+  },
+  "upstream": {
+    "nodes": [
+      {
+        "host": "nginx-service-product1.nginx.svc.cluster.local",
+        "port": 80,
+        "weight": 1
+      }
+    ],
+    "timeout": {
+      "connect": 6,
+      "send": 6,
+      "read": 6
+    },
+    "type": "roundrobin",
+    "scheme": "http",
+    "pass_host": "pass",
+    "keepalive_pool": {
+      "idle_timeout": 60,
+      "requests": 1000,
+      "size": 320
+    }
+  },
+  "status": 1
+}
