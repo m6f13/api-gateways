@@ -145,34 +145,34 @@ creating user
 ```shell
 kubectl -n ldap exec -it [POD_NAME] -- /bin/bash
 ```
-creating the ou-user.ldif
+working user creation example based on the org of deployment
 ```shell
-echo -e "dn: ou=users,dc=proconion,dc=com\nobjectClass: organizationalUnit\nou: users" > ou-user.ldif
+dn: ou=users,dc=proconion,dc=com
+nobjectClass: organizationalUnit
+ou: users
+description: Users of MyOrg
+dn: uid=jdoe,ou=users,dc=proconion,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: jdoe
+cn: John Doe
+sn: Doe
+userPassword: userpassword123
 ```
-adding the ou-user.ldif
 ```shell
-ldapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f ou-user.ldif
+echo -e "dn: ou=users,dc=proconion,dc=com\nobjectClass: organizationalUnit\nou: users\ndescription: Users of MyOrg\n\ndn: uid=jdoe,ou=users,dc=proconion,dc=com\nobjectClass: top\nobjectClass: person\nobjectClass: organizationalPerson\nobjectClass: inetOrgPerson\nuid: jdoe\ncn: John Doe\nsn: Doe\nuserPassword: userpassword123" | ldapadd -x -H ldap://localhost -D "cn=admin,dc=proconion,dc=com" -w adminpassword
 ```
 
-Inside the container, create a file named user.ldif
-```shell
-echo -e "dn: uid=username,ou=users,dc=proconion,dc=com\nobjectClass: top\nobjectClass: account\nobjectClass: simpleSecurityObject\nuserPassword: mypassword\nuid: username" > user.ldif
-```
-```shell
-dn: uid=username,ou=users,dc=proconion,dc=com
-objectClass: top
-objectClass: account
-objectClass: simpleSecurityObject
-userPassword: mypassword
-uid: username
-```
-add the user:
-```shell
-ldapadd -x -D "cn=admin,dc=proconion,dc=com" -w adminpassword -f user.ldif
-```
 verify if user is created
 ```shell
-kubectl -n ldap exec [POD_NAME] -- ldapsearch -x -LLL -H ldap://localhost:389 -D "cn=admin,dc=proconion,dc=com" -w adminpassword -b "ou=users,dc=proconion,dc=com" "(uid=username)"
+ldapsearch -x -H ldap://localhost:1389 -D "cn=admin,dc=proconion,dc=com" -w adminpassword -b "ou=users,dc=proconion,dc=com" "uid=jdoe"
+```
+## Openldap from bitnami
+- link: https://docs.bitnami.com/tutorials/create-openldap-server-kubernetes/
+```shell
+kubectl -n ldap create secret generic openldap --from-literal=adminpassword=adminpassword --from-literal=users=user01,user02 --from-literal=passwords=password01,password02
 ```
 ---
 # Kong

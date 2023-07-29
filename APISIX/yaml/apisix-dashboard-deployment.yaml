@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apisix-dashboard
+  namespace: apisix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apisix-dashboard
+  template:
+    metadata:
+      labels:
+        app: apisix-dashboard
+    spec:
+      containers:
+        - name: apisix-dashboard
+          image: apache/apisix-dashboard:latest

@@ -3,34 +3,40 @@ kind: Deployment
 metadata:
   name: openldap
   namespace: ldap
+  labels:
+    app.kubernetes.io/name: openldap
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: openldap
+      app.kubernetes.io/name: openldap
+  replicas: 1
   template:
     metadata:
       labels:
-        app: openldap
+        app.kubernetes.io/name: openldap
     spec:
       containers:
         - name: openldap
-          image: osixia/openldap:latest
+          image: docker.io/bitnami/openldap:latest
+          imagePullPolicy: "Always"
           env:
-            - name: LDAP_ORGANISATION
-              value: "MyOrg"
-            - name: LDAP_DOMAIN
-              value: "proconion.com"
+            - name: LDAP_ADMIN_USERNAME
+              value: "admin"
             - name: LDAP_ADMIN_PASSWORD
-              value: "adminpassword"
-            - name: LDAP_BASE_DN
-              value: "dc=proconion,dc=com"
+              valueFrom:
+                secretKeyRef:
+                  key: adminpassword
+                  name: openldap
+            - name: LDAP_USERS
+              valueFrom:
+                secretKeyRef:
+                  key: users
+                  name: openldap
+            - name: LDAP_PASSWORDS
+              valueFrom:
+                secretKeyRef:
+                  key: passwords
+                  name: openldap
           ports:
-            - containerPort: 389
-          volumeMounts:
-            - mountPath: /var/lib/ldap
-              name: data
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: openldap-pvc
+            - name: tcp-ldap
+              containerPort: 1389
