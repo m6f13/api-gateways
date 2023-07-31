@@ -124,8 +124,30 @@ using devopsfaith/krakend:watch
 # Kong
 - link: https://github.com/Kong/kubernetes-ingress-controller
 - 
+## Kong configs
+### Service configuration
+```shell
+curl -i -X POST http://localhost:8001/services \
+    --data "name=service-nginx-ldap" \
+    --data "url=http://nginx-service-product1.nginx.svc.cluster.local"
+```
+### Route configuration
+```shell
+curl -i -X POST http://localhost:8001/services/service-nginx-ldap/routes \
+    --data "paths[]=/nginx-service-product1"
+```
+### Authenitcation
+```shell
+curl -i -X POST http://localhost:8001/services/service-nginx-ldap/plugins \
+    --data "name=ldap-auth" \
+    --data "config.hide_credentials=true" \
+    --data "config.ldap_host=openldap-service.ldap.svc.cluster.local" \
+    --data "config.ldap_port=389" \
+    --data "config.base_dn=ou=users,dc=proconion,dc=com" \
+    --data "config.attribute=uid" \
+    --data "config.cache_ttl=60"
 
-
+```
 
 
 ---

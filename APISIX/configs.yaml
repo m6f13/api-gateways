@@ -6,7 +6,7 @@
   "base_dn": "ou=users,dc=proconion,dc=com",
   "disable": false,
   "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
-  "uid": "cn"
+  "uid": "uid"
 }
 
 # consumer: ldap-auth
@@ -18,7 +18,7 @@
       "_meta": {
         "disable": false
       },
-      "user_dn": "cn=jdoe,ou=users,dc=proconion,dc=com"
+      "user_dn": "uid=jdoe,ou=users,dc=proconion,dc=com"
     }
   }
 }
@@ -47,8 +47,8 @@
       },
       "base_dn": "ou=users,dc=proconion,dc=com",
       "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
-      "uid": "cn",
-      "user_dn": "cn=%s,ou=users,dc=proconion,dc=com"
+      "uid": "uid",
+      "user_dn": "uid=%s,ou=users,dc=proconion,dc=com"
     }
   },
   "upstream": {
