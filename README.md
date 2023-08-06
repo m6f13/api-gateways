@@ -108,6 +108,12 @@ helm repo add equinixmetal https://helm.equinixmetal.com
 kubectl create configmap krakend-cfg --from-file=./krakend-cfg.json -n krakend
 ```
 ---
+## KrakenD Testing
+```shell
+curl -X GET -u me:pass http://localhost:8080/secure
+wget --header="Authorization: Basic $(echo -n me:pass | base64)" http://localhost:8080/secure
+```
+---
 ## KrakenD playground
 - youtube: https://www.youtube.com/watch?v=VtXXZRO84t8
 - link: https://github.com/krakendio/playground-community
