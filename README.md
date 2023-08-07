@@ -213,3 +213,6 @@ kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-contr
 ```shell
 helm upgrade --install kong-poc ./kong -f ./kong/values.yaml -n kong
 ```
+---
+# Jaeger
+exposing the port of service: service/jaeger-query-ui
