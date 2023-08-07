@@ -45,6 +45,20 @@ data:
             "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
             "base_dn": "ou=users,dc=proconion,dc=com"
           }
+        },
+        "telemetry/opencensus": {
+          "sample_rate": 100,
+          "reporting_period": 1,
+          "enabled_layers": {
+            "backend": true,
+            "router": true
+          },
+          "exporters": {
+            "jaeger": {
+              "endpoint": "http://jaeger-traces.jaeger.svc.cluster.local:14268/api/traces",
+              "service_name": "krakend"
+            }
+          }
         }
       },
       "endpoints": [
