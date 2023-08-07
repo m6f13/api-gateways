@@ -45,18 +45,54 @@ data:
             "ldap_uri": "openldap-service.ldap.svc.cluster.local:389",
             "base_dn": "ou=users,dc=proconion,dc=com"
           }
-        },
-        "proxy": {
-          "sequential": true
         }
       },
       "endpoints": [
         {
-          "endpoint": "/secure",
+          "@comment": "Feature: Mocked response",
+          "endpoint": "/mocked-response",
+          "method": "GET",
+          "output_encoding": "json",
+          "backend": [{"host": ["http://unexistent_backend"], "url_pattern": "/"}],
           "extra_config": {
-            
-          },
+            "proxy": {
+              "static": {
+                "data": {
+                  "an_integer": 123,
+                  "an_array": [
+                    "arr1",
+                    "arr2"
+                  ],
+                  "an_object": {
+                    "obj": "obj1"
+                  }
+                },
+                "strategy": "always"
+              }
+            }
+          }
+        },
+        {
+          "endpoint": "/secure",
           "backend": [
+            {
+              "host": ["https://api.github.com"],
+              "url_pattern": "/users/m6f13",
+              "allow": [
+                "avatar_url",
+                "name",
+                "company",
+                "blog",
+                "location",
+                "mail",
+                "hireable",
+                "public_repos"
+              ],
+              "mapping": {
+                "blog": "website"
+              },
+              "group": "github_response"
+            },
             {
               "url_pattern": "/nginx-service-product1/",
               "extra_config": {
@@ -65,7 +101,71 @@ data:
                 "http://nginx-service-product1.nginx.svc.cluster.local"
               ]
             }
+          ],
+          "extra_config": {
+            "proxy": {
+              "sequential": true
+            }
+          }
+        },
+        {
+          "@comment": "Feature: Aggregation + Basic transformation (filtering & mapping) + grouping",
+          "endpoint": "/git/{user}",
+          "backend": [
+            {
+              "host": ["https://api.github.com"],
+              "url_pattern": "/users/{user}",
+              "allow": [
+                "avatar_url",
+                "name",
+                "company",
+                "blog",
+                "location",
+                "mail",
+                "hireable",
+                "followers",
+                "public_repos",
+                "public_gists"
+              ],
+              "mapping": {
+                "blog": "website"
+              },
+              "group": "user"
+            },
+            {
+              "host": ["https://api.github.com"],
+              "url_pattern": "/users/{user}/repos",
+              "mapping": {
+                "collection": "repos"
+              },
+              "is_collection": true
+            }
           ]
+        },
+        {
+          "@comment": "Feature: Aggregation + backend rate limiting + endpoint rate limiting",
+          "endpoint": "/shop",
+          "backend": [
+            {
+              "url_pattern": "/shop/campaigns.json",
+              "allow": [ "campaigns" ]
+            },
+            {
+              "url_pattern": "/shop/products.json",
+              "allow": [ "products" ],
+              "extra_config": {
+                "qos/ratelimit/proxy": {
+                  "max_rate": 1,
+                  "capacity": 1
+                }
+              }
+            }
+          ],
+          "extra_config": {
+            "qos/ratelimit/router": {
+              "max_rate": 2
+            }
+          }
         }
       ]
     }
