@@ -129,6 +129,7 @@ using devopsfaith/krakend:watch
 ---
 # Kong
 - link: https://github.com/Kong/kubernetes-ingress-controller
+- installation based on documentation with helm: https://docs.konghq.com/gateway/latest/install/kubernetes/helm-quickstart/
 - 
 ## Kong configs
 ### Service configuration
